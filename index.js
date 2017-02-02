@@ -8,17 +8,7 @@ const S3_ACCESS_KEY = process.env.S3_ACCESS_KEY;
 const S3_SECRET_ACCESS_KEY = process.env.S3_SECRET_ACCESS_KEY;
 const S3_ENDPOINT = process.env.S3_ENDPOINT;
 
-function checkTrailingSlash (path) {
-  let newPath;
-
-  if (path && path[path.length - 1] !== '/') {
-    newPath = path + '/';
-  }
-
-  return newPath;
-}
-
-module.exports = function S3Router (options) {
+module.exports = function S3Router(options) {
   const S3_BUCKET = options.bucket;
 
   if (!S3_BUCKET) {
@@ -46,40 +36,41 @@ module.exports = function S3Router (options) {
     prefix: options.prefix || '/s3'
   });
 
-  /**
-   * Redirects image requests with a temporary signed URL, giving access
-   * to GET an upload.
-   */
-  function * tempRedirect() {
-    const self = this;
+  if (options.enableRedirect) {
+    /**
+     * Redirects requests with a temporary signed URL, giving access
+     * to GET an upload.
+     */
+    router.get('/uploads/:key', function* tempRedirect() {
+      const self = this;
 
-    const params = {
-      Bucket: S3_BUCKET,
-      Key: options.key
-    };
+      const params = {
+        Bucket: S3_BUCKET,
+        Key: this.params.key,
+      };
 
-    s3.getSignedUrl('getObject', params, function (err, url) {
-      self.redirect(url);
+      s3.getSignedUrl('getObject', params, function (err, url) {
+        self.redirect(url);
+      });
     });
   }
-
-  /**
-   * Image specific route.
-   */
-  router.get(/\/img\/(.*)/, tempRedirect);
-
-  /**
-   * Other file type(s) route.
-   */
-  router.get(/\/uploads\/(.*)/, tempRedirect);
 
   /**
    * Returns an object with `signedUrl` and `publicUrl` properties that
    * give temporary access to PUT an object in an S3 bucket.
    */
   router.get('/sign', function * () {
+    if (!this.query.objectName || !this.query.fileName) {
+      this.throw(400, 'Either objectName or fileName is required as a query parameter');
+    }
+    if (!this.query.contentType) {
+      this.throw(400, 'contentType is a required query parameter');
+    }
     const self = this;
-    const filename = uuid.v4() + '_' + this.query.objectName;
+    let filename = this.query.fileName || this.query.objectName;
+    if (options.randomizeFilename) {
+      filename = uuid.v4() + '_' + filename;
+    }
     const mimeType = this.query.contentType;
 
     // Set any custom headers
@@ -87,15 +78,19 @@ module.exports = function S3Router (options) {
       this.set(options.headers);
     }
 
+    const key = options.keyPrefix
+      ? options.keyPrefix.replace(/\/$/, '') + '/' + filename
+      : filename;
+
     const params = {
       Bucket: S3_BUCKET,
-      Key: checkTrailingSlash(options.key) + filename,
+      Key: key,
       Expires: 60,
       ContentType: mimeType,
       ACL: options.ACL || 'private'
     };
 
-    s3.getSignedUrl('putObject', params, function (err, data) {
+    s3.getSignedUrl('putObject', params, function(err, data) {
       if (err) {
         console.log(err);
         self.status = 500;
@@ -103,10 +98,14 @@ module.exports = function S3Router (options) {
       }
 
       self.body = {
+        filename: filename,
+        key: key,
         signedUrl: data,
-        publicUrl: '/s3/uploads/' + filename,
-        filename
       };
+
+      if (options.enableRedirect) {
+        self.body.publicUrl = '/s3/uploads/' + filename;
+      }
     });
   });
 

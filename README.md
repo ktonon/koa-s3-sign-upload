@@ -18,6 +18,12 @@ const signS3 = require('koa-s3-sign-upload');
 app.use(signS3({
   bucket: 'MyS3Bucket',
 
+  // optional. Prepends this values to all upload keys
+  keyPrefix: '',
+
+  // optional. Prepends a random GUID to the `objectName` query parameter
+  randomizeFilename: true,
+
   // optional
   region: 'us-east-1',
 
@@ -35,10 +41,19 @@ app.use(signS3({
 
   // optional. default is /s3. useful if you version your API endpoints
   prefix: '/v1/s3',
+
+  // optional. exposes GET /s3/uploads/...
+  // which redirects to signed S3 urls
+  enableRedirect: true,
 }));
 ```
 
-This also provides another endpoint: GET /s3/img/(.*) and GET /s3/uploads/(.*). This will create a temporary URL that provides access to the uploaded file (which are uploaded privately by default). The request is then redirected to the URL, so that the image is served to the client.
+With default parameters, this will expose an endpoint `GET /s3/sign` for signing S3 upload requests. The endpoint expects the following query parameters:
+
+* Either `objectName` or `fileName`. If both are provided, `fileName` will be used. This is appended to the `keyPrefix` to form the S3 key. Note that the `randomizeFilename` option will cause the filename to get prepended with a GUID
+* `contentType` will be used to set the mime type of the file once uploaded to S3
+
+If `enableRedirect` is set, this will also provide another endpoint: `GET /s3/uploads/(.*)`, which will create a temporary URL that provides access to the uploaded file (which are uploaded privately by default). The request is then redirected to the URL, so that the image is served to the client.
 
 __Access/Secret Keys__
 
