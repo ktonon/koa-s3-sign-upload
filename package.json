@@ -1,0 +1,29 @@
+{
+  "name": "koa-s3-sign-upload",
+  "version": "1.0.0",
+  "description": "Middleware for Koa to Sign S3 upload requests",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ktonon/koa-s3-sign-upload.git"
+  },
+  "keywords": [
+    "koa",
+    "react",
+    "s3"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ktonon/koa-s3-sign-upload/issues"
+  },
+  "homepage": "https://github.com/ktonon/koa-s3-sign-upload#readme",
+  "dependencies": {
+    "aws-sdk": "^2.9.0",
+    "koa-router": "^7.1.0",
+    "node-uuid": "^1.4.7"
+  }
+}
