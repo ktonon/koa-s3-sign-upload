@@ -36,15 +36,14 @@ module.exports = function S3Router (options) {
     s3Options.endpoint = options.endpoint;
   }
 
-  const s3 = new AWS.S3({
-    ...s3Options,
+  const s3 = new AWS.S3(Object.assign({
     accessKeyId: S3_ACCESS_KEY,
     secretAccessKey: S3_SECRET_ACCESS_KEY,
     endpoint: S3_ENDPOINT
-  });
+  }, s3Options));
 
   const router = new Router({
-    prefix: options.prefix || 's3'
+    prefix: options.prefix || '/s3'
   });
 
   /**
