@@ -1,6 +1,6 @@
 {
   "name": "koa-s3-sign-upload",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Middleware for Koa to Sign S3 upload requests",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,7 @@
     "react",
     "s3"
   ],
-  "author": "",
+  "author": "Kevin Tonon <kevin@betweenconcepts.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/ktonon/koa-s3-sign-upload/issues"

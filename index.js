@@ -4,8 +4,8 @@ const Router = require('koa-router');
 const uuid = require('node-uuid');
 const AWS = require('aws-sdk');
 
-const S3_ACCESS_KEY = process.env.S3_ACCESS_KEY;
-const S3_SECRET_ACCESS_KEY = process.env.S3_SECRET_ACCESS_KEY;
+const S3_ACCESS_KEY = process.env.AWS_ACCESS_KEY_ID;
+const S3_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
 const S3_ENDPOINT = process.env.S3_ENDPOINT;
 
 module.exports = function S3Router(options) {
