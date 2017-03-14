@@ -36,6 +36,12 @@ app.use(signS3({
   // this is default
   ACL: 'private',
 
+  // optional
+  accessKeyId: 'foo',
+
+  // optional
+  secretAccessKey: 'bar',
+
   // optional. useful for s3-compatible APIs
   endpoint: 'https://rest.s3alternative.com',
 
@@ -57,7 +63,7 @@ If `enableRedirect` is set, this will also provide another endpoint: `GET /s3/up
 
 __Access/Secret Keys__
 
-The [aws-sdk][] must be configured with your account's Access Key and Secret Access Key. [There are a number of ways to provide these](http://docs.aws.amazon.com/AWSJavaScriptSDK/guide/node-configuring.html), but setting up environment variables is the quickest. You just have to configure environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`, and AWS automatically picks them up.
+The [aws-sdk][] must be configured with your account's Access Key and Secret Access Key. [There are a number of ways to provide these](http://docs.aws.amazon.com/AWSJavaScriptSDK/guide/node-configuring.html). The easiest ways are to either provide them in the options or to set up the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` environment variables, and AWS automatically picks them up.
 
 [@OKNoah]:https://github.com/OKNoah
 [aws-sdk]:https://github.com/aws/aws-sdk-js

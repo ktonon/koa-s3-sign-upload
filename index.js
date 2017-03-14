@@ -22,6 +22,12 @@ module.exports = function S3Router(options) {
   if (options.signatureVersion) {
     s3Options.signatureVersion = options.signatureVersion;
   }
+  if (options.accessKeyId) {
+    s3Options.accessKeyId = options.accessKeyId;
+  }
+  if (options.secretAccessKey) {
+    s3Options.secretAccessKey = options.secretAccessKey;
+  }
   if (options.endpoint) {
     s3Options.endpoint = options.endpoint;
   }
