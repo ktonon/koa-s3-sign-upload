@@ -23,7 +23,7 @@
   "homepage": "https://github.com/ktonon/koa-s3-sign-upload#readme",
   "dependencies": {
     "aws-sdk": "^2.9.0",
-    "koa-router": "^7.1.0",
+    "koa-router": "^5.4.1",
     "node-uuid": "^1.4.7"
   }
 }
