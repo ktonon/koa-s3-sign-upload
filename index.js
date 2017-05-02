@@ -66,7 +66,7 @@ module.exports = function S3Router(options) {
    * give temporary access to PUT an object in an S3 bucket.
    */
   router.get('/sign', function * () {
-    if (!this.query.objectName || !this.query.fileName) {
+    if (!this.query.objectName && !this.query.fileName) {
       this.throw(400, 'Either objectName or fileName is required as a query parameter');
     }
     if (!this.query.contentType) {
