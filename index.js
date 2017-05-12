@@ -4,15 +4,9 @@ const Router = require('koa-router');
 const uuid = require('node-uuid');
 const AWS = require('aws-sdk');
 
-const S3_ACCESS_KEY = process.env.AWS_ACCESS_KEY_ID;
-const S3_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
-const S3_ENDPOINT = process.env.S3_ENDPOINT;
-
 module.exports = function S3Router(options) {
-  const S3_BUCKET = options.bucket;
-
-  if (!S3_BUCKET) {
-    throw new Error('S3_BUCKET is required.');
+  if (!options.bucket) {
+    throw new Error('bucket is required.');
   }
 
   const s3Options = {};
@@ -32,11 +26,7 @@ module.exports = function S3Router(options) {
     s3Options.endpoint = options.endpoint;
   }
 
-  const s3 = new AWS.S3(Object.assign({
-    accessKeyId: S3_ACCESS_KEY,
-    secretAccessKey: S3_SECRET_ACCESS_KEY,
-    endpoint: S3_ENDPOINT
-  }, s3Options));
+  const s3 = new AWS.S3(s3Options);
 
   const router = new Router({
     prefix: options.prefix || '/s3'
@@ -51,7 +41,7 @@ module.exports = function S3Router(options) {
       const self = this;
 
       const params = {
-        Bucket: S3_BUCKET,
+        Bucket: options.bucket,
         Key: this.params.key,
       };
 
@@ -89,7 +79,7 @@ module.exports = function S3Router(options) {
       : filename;
 
     const params = {
-      Bucket: S3_BUCKET,
+      Bucket: options.bucket,
       Key: key,
       Expires: 60,
       ContentType: mimeType,

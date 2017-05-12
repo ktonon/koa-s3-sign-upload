@@ -63,7 +63,10 @@ If `enableRedirect` is set, this will also provide another endpoint: `GET /s3/up
 
 __Access/Secret Keys__
 
-The [aws-sdk][] must be configured with your account's Access Key and Secret Access Key. [There are a number of ways to provide these](http://docs.aws.amazon.com/AWSJavaScriptSDK/guide/node-configuring.html). The easiest ways are to either provide them in the options or to set up the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` environment variables, and AWS automatically picks them up.
+The [aws-sdk][] must be configured with your account's AWS credentials. [There are a number of ways to provide these](http://docs.aws.amazon.com/AWSJavaScriptSDK/guide/node-configuring.html). The easiest ways are to either provide them in the options or to set up the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` environment variables for the SDK to pick them up.
+
+Note: Best practice in EC2/Lambda is to use an IAM instance/execution role, in which case you must not specify the `accessKeyId` and `secretAccessKey` options, and leave the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` empty.
+
 
 [@OKNoah]:https://github.com/OKNoah
 [aws-sdk]:https://github.com/aws/aws-sdk-js
