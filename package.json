@@ -1,6 +1,6 @@
 {
   "name": "koa-s3-sign-upload",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Middleware for Koa to Sign S3 upload requests",
   "main": "index.js",
   "scripts": {
