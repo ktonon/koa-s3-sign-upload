@@ -86,14 +86,14 @@ module.exports = function S3Router(options) {
       ACL: options.ACL || 'private'
     };
 
-    s3.getSignedUrl('putObject', params, function(err, data) {
-      if (err) {
-        console.log('Error:'.concat(err,'.Data:',data,'.'));
-        self.status = 500;
-        self.body = 'Cannot create S3 signed URL';
-        return;
-      }
-
+    yield new Promise(function(resolve, reject) {
+      s3.getSignedUrl('putObject', params, function(err, data) {
+        if (err) {
+          reject(err);
+        }
+        resolve(data);
+      });
+    }).then(function(data) {
       self.body = {
         filename: filename,
         key: key,
@@ -103,6 +103,10 @@ module.exports = function S3Router(options) {
       if (options.enableRedirect) {
         self.body.publicUrl = '/s3/uploads/' + filename;
       }
+    }).catch(function(err){
+      console.log('Error:'.concat(err,'.Data:',data,'.'));
+      self.body = 'Cannot create S3 signed URL';
+      self.status = 500;
     });
   });
 
