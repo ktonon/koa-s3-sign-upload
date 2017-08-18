@@ -88,9 +88,10 @@ module.exports = function S3Router(options) {
 
     s3.getSignedUrl('putObject', params, function(err, data) {
       if (err) {
-        console.log(err);
+        console.log('Error:'.concat(err,'.Data:',data,'.'));
         self.status = 500;
         self.body = 'Cannot create S3 signed URL';
+        return;
       }
 
       self.body = {
