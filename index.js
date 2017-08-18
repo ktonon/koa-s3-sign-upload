@@ -27,6 +27,17 @@ module.exports = function S3Router(options) {
   }
 
   const s3 = new AWS.S3(s3Options);
+  // Promisifier for the getSignedUrl call
+  const getSignedUrlAsync = (command, params) => {
+    return new Promise((resolve, reject) => {
+      s3.getSignedUrl(command, params, (err, data) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(data);
+      });
+    });
+  }
 
   const router = new Router({
     prefix: options.prefix || '/s3'
@@ -44,10 +55,13 @@ module.exports = function S3Router(options) {
         Bucket: options.bucket,
         Key: this.params.key,
       };
-
-      s3.getSignedUrl('getObject', params, function (err, url) {
-        self.redirect(url);
-      });
+      try {
+        self.redirect(yield getSignedUrlAsync('getObject', params));
+      } catch(err) {
+        console.log(`Error: ${err}.`);
+        self.status = err.status || 500;
+        self.body = err.message || 'Getting signed for the object failed';
+      }
     });
   }
 
@@ -65,7 +79,7 @@ module.exports = function S3Router(options) {
     const self = this;
     let filename = this.query.fileName || this.query.objectName;
     if (options.randomizeFilename) {
-      filename = uuid.v4() + '_' + filename;
+      filename = `${uuid.v4()}_${filename}`;
     }
     const mimeType = this.query.contentType;
 
@@ -75,7 +89,7 @@ module.exports = function S3Router(options) {
     }
 
     const key = options.keyPrefix
-      ? options.keyPrefix.replace(/\/$/, '') + '/' + filename
+      ? `${options.keyPrefix.replace(/\/$/, '')}/${filename}`
       : filename;
 
     const params = {
@@ -86,28 +100,22 @@ module.exports = function S3Router(options) {
       ACL: options.ACL || 'private'
     };
 
-    yield new Promise(function(resolve, reject) {
-      s3.getSignedUrl('putObject', params, function(err, data) {
-        if (err) {
-          reject(err);
-        }
-        resolve(data);
-      });
-    }).then(function(data) {
+    try {
+      const url = yield getSignedUrlAsync('putObject', params);
       self.body = {
         filename: filename,
         key: key,
-        signedUrl: data,
+        signedUrl: url,
       };
-
+  
       if (options.enableRedirect) {
-        self.body.publicUrl = '/s3/uploads/' + filename;
+        self.body.publicUrl = `/s3/uploads/${filename}`;
       }
-    }).catch(function(err){
-      console.log('Error:'.concat(err,'.Data:',data,'.'));
+    } catch(err) {
+      console.log(`Error: ${err}.`);
       self.body = 'Cannot create S3 signed URL';
       self.status = 500;
-    });
+    }
   });
 
   return router.routes();
