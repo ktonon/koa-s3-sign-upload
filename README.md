@@ -1,8 +1,10 @@
 # koa-s3-sign-upload
 
-Middleware for [Koa][] to sign AWS S3 upload requests.
+Middleware for [Koa 2][] to sign AWS S3 upload requests.
 
 Specifically, this middleware is designed to work with [react-s3-uploader][]. Credit is given to [@OKNoah][] for [PR #80][] from which this package is derived.
+
+**Note: Use v2 for compatibility with Koa 1.**
 
 __Install__
 
@@ -70,6 +72,6 @@ Note: Best practice in EC2/Lambda is to use an IAM instance/execution role, in w
 
 [@OKNoah]:https://github.com/OKNoah
 [aws-sdk]:https://github.com/aws/aws-sdk-js
-[Koa]:http://koajs.com/
+[Koa 2]:http://koajs.com/
 [PR #80]:https://github.com/odysseyscience/react-s3-uploader/pull/80
 [react-s3-uploader]:https://github.com/odysseyscience/react-s3-uploader

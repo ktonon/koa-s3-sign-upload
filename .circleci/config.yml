@@ -1,0 +1,54 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: circleci/node:8.11-browsers
+
+    steps:
+      - checkout
+
+      - run:
+          name: Authenticate with Artifactory
+          command: curl -ks -u$ARTIFACTORY_USER:$ARTIFACTORY_PASS "https://d2lartifacts.artifactoryonline.com/d2lartifacts/api/npm/npm-local/auth/d2l" -o ~/project/.npmrc
+
+      - restore_cache:
+          key: v1-{{ checksum "package.json" }}
+
+      - run: npm install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-{{ checksum "package.json" }}
+
+      - persist_to_workspace:
+          root: ~/project
+          paths: .
+
+  publish:
+    docker:
+      - image: circleci/node:8.11-browsers
+
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run: 
+          command: |
+            npm install publish
+            ./node_modules/.bin/publish
+
+workflows:
+  version: 2
+
+  build-and-publish:
+    jobs:
+      - build
+      - publish:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
+                - /^release.*/
