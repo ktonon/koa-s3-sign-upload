@@ -48,15 +48,15 @@ module.exports = function S3Router(options) {
      * Redirects requests with a temporary signed URL, giving access
      * to GET an upload.
      */
-    router.get('/uploads/:key', function* tempRedirect() {
-      const self = this;
+    router.get('/uploads/:key', async function tempRedirect(ctx) {
+      const self = ctx;
 
       const params = {
         Bucket: options.bucket,
-        Key: this.params.key,
+        Key: ctx.params.key,
       };
       try {
-        self.redirect(yield getSignedUrlAsync('getObject', params));
+        self.redirect(await getSignedUrlAsync('getObject', params));
       } catch(err) {
         console.log(`Error: ${err}.`);
         self.status = err.status || 500;
@@ -69,23 +69,23 @@ module.exports = function S3Router(options) {
    * Returns an object with `signedUrl` and `publicUrl` properties that
    * give temporary access to PUT an object in an S3 bucket.
    */
-  router.get('/sign', function * () {
-    if (!this.query.objectName && !this.query.fileName) {
-      this.throw(400, 'Either objectName or fileName is required as a query parameter');
+  router.get('/sign', async function(ctx) {
+    if (!ctx.query.objectName && !ctx.query.fileName) {
+      ctx.throw(400, 'Either objectName or fileName is required as a query parameter');
     }
-    if (!this.query.contentType) {
-      this.throw(400, 'contentType is a required query parameter');
+    if (!ctx.query.contentType) {
+      ctx.throw(400, 'contentType is a required query parameter');
     }
-    const self = this;
-    let filename = this.query.fileName || this.query.objectName;
+    const self = ctx;
+    let filename = ctx.query.fileName || ctx.query.objectName;
     if (options.randomizeFilename) {
       filename = `${uuid.v4()}_${filename}`;
     }
-    const mimeType = this.query.contentType;
+    const mimeType = ctx.query.contentType;
 
     // Set any custom headers
     if (options.headers) {
-      this.set(options.headers);
+      ctx.set(options.headers);
     }
 
     const key = options.keyPrefix
@@ -101,7 +101,7 @@ module.exports = function S3Router(options) {
     };
 
     try {
-      const url = yield getSignedUrlAsync('putObject', params);
+      const url = await getSignedUrlAsync('putObject', params);
       self.body = {
         filename: filename,
         key: key,
