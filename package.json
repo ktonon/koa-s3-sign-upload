@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ktonon/koa-s3-sign-upload.git"
+    "url": "git+https://github.com/Informed/koa-s3-sign-upload.git"
   },
   "keywords": [
     "koa",
@@ -23,9 +23,9 @@
   "author": "Kevin Tonon <kevin@betweenconcepts.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ktonon/koa-s3-sign-upload/issues"
+    "url": "https://github.com/Informed/koa-s3-sign-upload/issues"
   },
-  "homepage": "https://github.com/ktonon/koa-s3-sign-upload#readme",
+  "homepage": "https://github.com/Informed/koa-s3-sign-upload#readme",
   "dependencies": {
     "aws-sdk": "2.348.0",
     "koa-router": "^5.4.1",
