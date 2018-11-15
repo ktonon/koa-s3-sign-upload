@@ -1,7 +1,7 @@
 'use strict';
 
 const Router = require('koa-router');
-const uuid = require('node-uuid');
+const uuid = require('uuid');
 const AWS = require('aws-sdk');
 
 module.exports = function S3Router(options) {
@@ -26,7 +26,7 @@ module.exports = function S3Router(options) {
     s3Options.endpoint = options.endpoint;
   }
 
-  const s3 = new AWS.S3(s3Options);
+  const s3 = options.S3 ? options.S3 : new AWS.S3(s3Options);
   // Promisifier for the getSignedUrl call
   const getSignedUrlAsync = (command, params) => {
     return new Promise((resolve, reject) => {
