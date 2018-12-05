@@ -95,7 +95,7 @@ module.exports = function S3Router(options) {
     const params = {
       Bucket: options.bucket,
       Key: key,
-      Expires: 60,
+      Expires: options.expires || 60,
       ContentType: mimeType,
       ACL: options.ACL || 'private'
     };
