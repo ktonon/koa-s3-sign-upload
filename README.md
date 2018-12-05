@@ -53,6 +53,9 @@ app.use(signS3({
   // optional. exposes GET /s3/uploads/...
   // which redirects to signed S3 urls
   enableRedirect: true,
+
+  // this is default
+  expires: 60
 }));
 ```
 
