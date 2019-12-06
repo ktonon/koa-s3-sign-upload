@@ -92,6 +92,16 @@ module.exports = function S3Router(options) {
       ? `${options.keyPrefix.replace(/\/$/, '')}/${filename}`
       : filename;
 
+    if (options.keyRegExp) {
+      const regexp = options.keyRegExp instanceof RegExp 
+        ? options.keyRegExp 
+        : new RegExp(options.keyRegExp);
+      
+        if (!regexp.test(key)) {
+          ctx.throw(400, 'Key does not match the regexp');
+        }
+    }
+
     const params = {
       Bucket: options.bucket,
       Key: key,
